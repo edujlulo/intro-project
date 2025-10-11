@@ -77,10 +77,29 @@ function addpersoninput() {
  */
 function editperson(ev) {
   clearform("personform");
-  const personrow = findancestorbytype(ev.target, "tr");
-  setformfieldvalue("personform-name", personrow.person.name);
 
-  showform("personform", () => console.log("submitted peopleform"));
+  // Get the person row
+  const personrow = findancestorbytype(ev.target, "tr");
+  const person = personrow.person;
+
+  // Fill the form fields
+  setformfieldvalue("personform-name", person.name);
+  setformfieldvalue("personform-email", person.email || "");
+  setformfieldvalue("personform-notes", person.notes || "");
+
+  // Show the form and define what happens on Save
+  showform("personform", async () => {
+    // Update the person with new values
+    await updateperson(
+      person.id, // Make sure each person has a unique id
+      person.name, // Name is not changed
+      getformfieldvalue("personform-email"),
+      getformfieldvalue("personform-notes")
+    );
+
+    // Refresh the table to display updated email and notes
+    await gopeople();
+  });
 }
 
 /**
