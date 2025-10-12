@@ -1,4 +1,4 @@
-import { getdata, putdata } from "./api.js";
+import { getdata, putdata, deletedata } from "./api.js";
 import {
   showform,
   getformfieldvalue,
@@ -44,35 +44,6 @@ async function addperson(name, email, notes) {
 async function updateperson(id, name, email, notes) {
   await putdata("people", { id, name, email, notes });
 }
-
-// 🔴 NEW: Delete function that communicates with the backend
-/**
- * Delete a person by id
- * @param {string} id
- */
-async function deleteperson(id) {
-  await putdata("people/delete", { id });
-}
-
-// 🔴 NEW: Handle the click on Delete button
-/**
- * Handle delete button click
- * @param {Event} ev
- */
-async function deletepersonevent(ev) {
-  const personrow = findancestorbytype(ev.target, "tr");
-  const person = personrow.person;
-
-  const confirmdelete = confirm(
-    `Are you sure you want to delete ${person.name}?`
-  );
-  if (!confirmdelete) return;
-
-  await deleteperson(person.id);
-  await gopeople();
-}
-
-/************************************************************** */
 
 /**
  * @returns { Promise }
@@ -131,6 +102,29 @@ function editperson(ev) {
   });
 }
 
+async function deletepersonevent(ev) {
+  const personrow = findancestorbytype(ev.target, "tr");
+  const person = personrow.person;
+
+  const confirmDelete = confirm(
+    `Are you sure you want to delete ${person.name}?`
+  );
+  if (!confirmDelete) return;
+
+  const response = await fetch("/api/people", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: person.id }),
+  });
+
+  if (!response.ok) {
+    alert("Error deleting person.");
+    return;
+  }
+
+  await gopeople();
+}
+
 /**
  *
  * @param { object } person
@@ -150,7 +144,7 @@ export function addpersondom(person) {
   cells[8].innerText = person.email;
   cells[9].innerText = person.notes;
 
-  // 🔴 NEW: Create Delete button (red)
+  // Create Delete button (red)
   const deletebutton = document.createElement("button");
   deletebutton.textContent = "Delete";
   deletebutton.classList.add("btn-delete");
@@ -158,8 +152,14 @@ export function addpersondom(person) {
 
   const editbutton = document.createElement("button");
   editbutton.textContent = "Edit";
+  editbutton.className = "btn-edit";
   editbutton.addEventListener("click", editperson);
 
-  cells[10].appendChild(editbutton);
-  cells[10].appendChild(deletebutton);
+  // Container for buttons
+  const buttonContainer = document.createElement("div");
+  buttonContainer.className = "cell-buttons";
+  buttonContainer.appendChild(editbutton);
+  buttonContainer.appendChild(deletebutton);
+
+  cells[10].appendChild(buttonContainer);
 }
