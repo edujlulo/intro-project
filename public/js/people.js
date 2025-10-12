@@ -45,6 +45,35 @@ async function updateperson(id, name, email, notes) {
   await putdata("people", { id, name, email, notes });
 }
 
+// 🔴 NEW: Delete function that communicates with the backend
+/**
+ * Delete a person by id
+ * @param {string} id
+ */
+async function deleteperson(id) {
+  await putdata("people/delete", { id });
+}
+
+// 🔴 NEW: Handle the click on Delete button
+/**
+ * Handle delete button click
+ * @param {Event} ev
+ */
+async function deletepersonevent(ev) {
+  const personrow = findancestorbytype(ev.target, "tr");
+  const person = personrow.person;
+
+  const confirmdelete = confirm(
+    `Are you sure you want to delete ${person.name}?`
+  );
+  if (!confirmdelete) return;
+
+  await deleteperson(person.id);
+  await gopeople();
+}
+
+/************************************************************** */
+
 /**
  * @returns { Promise }
  */
@@ -121,9 +150,16 @@ export function addpersondom(person) {
   cells[8].innerText = person.email;
   cells[9].innerText = person.notes;
 
+  // 🔴 NEW: Create Delete button (red)
+  const deletebutton = document.createElement("button");
+  deletebutton.textContent = "Delete";
+  deletebutton.classList.add("btn-delete");
+  deletebutton.addEventListener("click", deletepersonevent);
+
   const editbutton = document.createElement("button");
   editbutton.textContent = "Edit";
   editbutton.addEventListener("click", editperson);
 
   cells[10].appendChild(editbutton);
+  cells[10].appendChild(deletebutton);
 }
