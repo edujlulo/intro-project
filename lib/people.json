@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Kermit Frog",
+    "email": "kermit@example.com",
+    "notes": ""
+  },
+  {
+    "id": 2,
+    "name": "Miss Piggy",
+    "email": "",
+    "notes": ""
+  },
+  {
+    "id": 3,
+    "name": "Eduardo Lulo",
+    "email": "eduardo@example.com",
+    "notes": "Junior web developer"
+  }
+]

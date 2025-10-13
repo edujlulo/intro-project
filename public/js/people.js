@@ -91,8 +91,8 @@ function editperson(ev) {
   showform("personform", async () => {
     // Update the person with new values
     await updateperson(
-      person.id, // Make sure each person has a unique id
-      person.name, // Name is not changed
+      person.id,
+      getformfieldvalue("personform-name"),
       getformfieldvalue("personform-email"),
       getformfieldvalue("personform-notes")
     );
